@@ -1,0 +1,78 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Usuario {
+  id            String   @id @default(uuid()) @db.Uuid
+  nome          String   @db.VarChar(100)
+  email         String   @unique @db.VarChar(320)
+  password_hash String
+  criado_em     DateTime @default(now()) @db.Timestamptz(3)
+  atualizado_em DateTime @updatedAt @db.Timestamptz(3)
+  sessoes       Sessao[]
+  tenis         Tenis[]
+  treinos       Treino[]
+  provas        Prova[]
+}
+
+model Sessao {
+  id         String   @id @default(uuid()) @db.Uuid
+  token_hash String   @unique @db.Char(64)
+  usuario_id String   @db.Uuid
+  expira_em  DateTime @db.Timestamptz(3)
+  criado_em  DateTime @default(now()) @db.Timestamptz(3)
+  usuario    Usuario  @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@index([usuario_id])
+  @@index([expira_em])
+}
+
+model Tenis {
+  id            String    @id @default(uuid()) @db.Uuid
+  usuario_id    String    @db.Uuid
+  modelo        String    @db.VarChar(120)
+  km_limite     Decimal   @db.Decimal(8, 2)
+  criado_em     DateTime  @default(now()) @db.Timestamptz(3)
+  atualizado_em DateTime  @updatedAt @db.Timestamptz(3)
+  usuario       Usuario   @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  treinos       Treino[]
+
+  @@unique([id, usuario_id])
+  @@index([usuario_id, criado_em])
+}
+
+model Treino {
+  id                String   @id @default(uuid()) @db.Uuid
+  usuario_id        String   @db.Uuid
+  tenis_id          String   @db.Uuid
+  data              DateTime @db.Date
+  distancia_km      Decimal  @db.Decimal(8, 2)
+  duracao_segundos  Int
+  observacoes       String?  @db.VarChar(2000)
+  criado_em         DateTime @default(now()) @db.Timestamptz(3)
+  atualizado_em     DateTime @updatedAt @db.Timestamptz(3)
+  usuario           Usuario  @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+  tenis             Tenis    @relation(fields: [tenis_id, usuario_id], references: [id, usuario_id], onDelete: Restrict)
+
+  @@index([usuario_id, data(sort: Desc), criado_em(sort: Desc), id(sort: Desc)])
+  @@index([tenis_id, usuario_id])
+}
+
+model Prova {
+  id            String   @id @default(uuid()) @db.Uuid
+  usuario_id    String   @db.Uuid
+  nome          String   @db.VarChar(150)
+  data          DateTime @db.Date
+  distancia_km  Decimal  @db.Decimal(8, 2)
+  criado_em     DateTime @default(now()) @db.Timestamptz(3)
+  atualizado_em DateTime @updatedAt @db.Timestamptz(3)
+  usuario       Usuario  @relation(fields: [usuario_id], references: [id], onDelete: Cascade)
+
+  @@index([usuario_id, data])
+}

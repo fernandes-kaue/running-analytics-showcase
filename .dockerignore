@@ -1,0 +1,12 @@
+.git
+.agents
+.codex
+.idea
+.next
+.omx
+dist
+frontend-corrida
+graphify-out
+node_modules
+npm-debug.log*
+.env*

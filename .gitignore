@@ -1,0 +1,36 @@
+# Dependencies and build output
+node_modules/
+dist/
+coverage/
+*.log
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Generated application files
+generated/prisma/
+frontend-corrida/.next/
+frontend-corrida/out/
+frontend-corrida/playwright-report/
+frontend-corrida/test-results/
+
+# Local tooling and generated reports
+.agents/
+.codex/
+.idea/
+.omx/
+graphify-out/
+
+# Local databases, dumps and backups
+*.dump
+*.sqlite
+*.sqlite3
+*.db
+*.sql.gz
+backups/
+
+# Operational production files are intentionally excluded from the showcase
+compose.yaml
+deploy/
